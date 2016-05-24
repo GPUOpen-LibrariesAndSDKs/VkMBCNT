@@ -22,12 +22,12 @@
 
 #include "VulkanSample.h"
 
-int main (int /*argc*/, char* /*argv*/[])
+int main(int /*argc*/, char* /*argv*/[])
 {
-	auto sample = new AMD::VulkanComputeSample;
-	
-	sample->Run ();
-	delete sample;
+    auto sample = new AMD::VulkanComputeSample;
 
-	return 0;
+    sample->Run();
+    delete sample;
+
+    return 0;
 }
