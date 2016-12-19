@@ -452,7 +452,7 @@ std::vector<MemoryTypeInfo> EnumerateHeaps(VkPhysicalDevice device)
 
 ///////////////////////////////////////////////////////////////////////////////
 VkDeviceMemory AllocateMemory(const std::vector<MemoryTypeInfo>& memoryInfos,
-    VkDevice device, const int size)
+    VkDevice device, const int size, bool* isHostCoherent = nullptr)
 {
     // We take the first HOST_VISIBLE memory
     for (auto& memoryInfo : memoryInfos)
@@ -467,6 +467,12 @@ VkDeviceMemory AllocateMemory(const std::vector<MemoryTypeInfo>& memoryInfos,
             VkDeviceMemory deviceMemory;
             vkAllocateMemory(device, &memoryAllocateInfo, nullptr,
                 &deviceMemory);
+
+            if (isHostCoherent)
+            {
+                *isHostCoherent = memoryInfo.hostCoherent;
+            }
+
             return deviceMemory;
         }
     }
@@ -578,8 +584,9 @@ void VulkanComputeSample::Run()
 
     bufferSize = outputBufferOffset + outputBufferRequirements.size;
 
+    bool memoryIsHostCoherent = false;
     auto memory = AllocateMemory(EnumerateHeaps(physicalDevice_), device_,
-        static_cast<int> (bufferSize));
+        static_cast<int> (bufferSize), &memoryIsHostCoherent);
 
     void* mapping = nullptr;
     vkMapMemory(device_, memory, 0, VK_WHOLE_SIZE, 0, &mapping);
@@ -711,17 +718,22 @@ void VulkanComputeSample::Run()
 
     vkQueueSubmit(queue_, 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(queue_);
-    VkMappedMemoryRange memoryRange = {};
-    memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-    memoryRange.memory = memory;
-    memoryRange.offset = 0;
-    memoryRange.size = VK_WHOLE_SIZE;
-
-    vkInvalidateMappedMemoryRanges(device_, 1, &memoryRange);
 
     // Output buffer is located at offset ElementCount * sizeof (float)
     vkMapMemory(device_, memory, outputBufferOffset,
         ElementCount * sizeof(float), 0, &mapping);
+
+    if (! memoryIsHostCoherent)
+    {
+        VkMappedMemoryRange memoryRange = {};
+        memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+        memoryRange.memory = memory;
+        memoryRange.offset = outputBufferOffset;
+        memoryRange.size = ElementCount * sizeof (float);
+
+        vkInvalidateMappedMemoryRanges (device_, 1, &memoryRange);
+    }
+
     data = static_cast<float*> (mapping);
     for (int i = 0; i < ElementCount; ++i)
     {
