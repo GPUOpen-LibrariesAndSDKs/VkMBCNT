@@ -308,6 +308,11 @@ void CreateDeviceAndQueue(VkInstance instance, VkDevice* outputDevice,
     deviceCreateInfo.queueCreateInfoCount = 1;
     deviceCreateInfo.pQueueCreateInfos = &deviceQueueCreateInfo;
 
+    VkPhysicalDeviceFeatures enabledFeatures = {};
+    enabledFeatures.shaderInt64 = true;
+
+    deviceCreateInfo.pEnabledFeatures = &enabledFeatures;
+
     std::vector<const char*> deviceLayers;
 
 #ifdef _DEBUG
@@ -710,7 +715,7 @@ void VulkanComputeSample::Run()
     memoryRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
     memoryRange.memory = memory;
     memoryRange.offset = 0;
-    memoryRange.size = bufferSize;
+    memoryRange.size = VK_WHOLE_SIZE;
 
     vkInvalidateMappedMemoryRanges(device_, 1, &memoryRange);
 
