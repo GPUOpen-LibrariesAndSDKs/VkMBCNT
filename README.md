@@ -30,7 +30,6 @@ Third-party software
 ------------------
 
 * Premake is distributed under the terms of the BSD License. See `premake\LICENSE.txt`.
-* The glslangValidator is distributed under the terms of the BSD License. See `vkmbcnt\src\glslangValidator-license.txt`.
 
 Attribution
 -----------
