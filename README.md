@@ -15,8 +15,7 @@ System requirements
   * Or other Vulkan&trade; compatible discrete GPU 
 * 64-bit Windows&reg; 7 (SP1 with the [Platform Update](https://msdn.microsoft.com/en-us/library/windows/desktop/jj863687.aspx)), Windows&reg; 8.1, or Windows&reg; 10
 * Visual Studio&reg; 2013 or Visual Studio&reg; 2015
-* Graphics driver with Vulkan support
-  * For example, AMD Radeon Software Crimson Edition 16.5.2 or later
+* Graphics driver with Vulkan support. For AMD, the AMD Radeon Software Crimson ReLive Edition 16.12.1 or later is required
 * The [Vulkan SDK](https://vulkan.lunarg.com) must be installed
 
 Building
