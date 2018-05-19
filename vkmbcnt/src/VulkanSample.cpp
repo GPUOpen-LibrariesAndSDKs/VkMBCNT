@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <string.h>
 
 #include "Utility.h"
 
@@ -84,8 +85,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugReportCallback(
     const char*                 pMessage,
     void*                       /*pUserData*/)
 {
+#ifdef _WIN32
     OutputDebugStringA(pMessage);
     OutputDebugStringA("\n");
+#else
+    printf("%s\n", pMessage);
+#endif
     return VK_FALSE;
 }
 
